@@ -91,7 +91,6 @@
 
 <script setup>
 import { ref } from 'vue'
-
 // État pour afficher/masquer le mot de passe
 const showPassword = ref(false)
 const togglePassword = () => {
