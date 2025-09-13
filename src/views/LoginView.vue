@@ -24,6 +24,7 @@
         <div>
           <label for="email" class="block text-sm font-medium text-gray-800">Adresse e-mail</label>
           <input
+            v-model="email"
             id="email"
             name="email"
             type="email"
@@ -40,6 +41,7 @@
         <div class="relative">
           <label for="password" class="block text-sm font-medium text-gray-800">Mot de passe</label>
           <input
+            v-model="password"
             :type="showPassword ? 'text' : 'password'"
             id="password"
             name="password"
@@ -64,9 +66,10 @@
 
         <!-- Bouton -->
         <button
-          type="submit"
+          :disabled="!email || !password"
+          @click.prevent="handleSubmit"
           aria-label="Se connecter à votre compte"
-          class="w-full py-2.5 px-4 bg-indigo-700 text-white font-semibold rounded-lg 
+          class="cursor-pointer w-full py-2.5 px-4 bg-indigo-700 text-white font-semibold rounded-lg 
                  shadow-md hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-indigo-500
                  active:scale-[0.98] transition"
         >
@@ -85,15 +88,54 @@
           Créer un compte
         </a>
       </p>
+      <p v-if="errorMessage" class="text-center mt-3 text-sm text-red-600" role="alert">
+        {{ errorMessage }}
+      </p>
     </section>
   </main>
 </template>
 
 <script setup>
 import { ref } from 'vue'
+import {login}  from '../services/api.js'
+
 // État pour afficher/masquer le mot de passe
 const showPassword = ref(false)
+const email = ref('')
+const password = ref('')
+const errorMessage = ref('')
+
 const togglePassword = () => {
   showPassword.value = !showPassword.value
 }
+
+const validateEmail = (email) => {
+  const re = /\S+@\S+\.\S+/
+  return re.test(email)
+}
+
+const handleSubmit = async () => {
+  errorMessage.value = ''
+
+  // Vérifications front
+  if (!email.value || !password.value) {
+    errorMessage.value = 'Tous les champs sont requis.'
+    return
+  }
+
+  if (!validateEmail(email.value)) {
+    errorMessage.value = 'Email invalide.'
+    return
+  }
+
+  try {
+    const data = await login(email.value, password.value)
+    console.log('Connecté !', data)
+    // Stocker le token si nécessaire, ex: Pinia ou localStorage
+  } catch (err) {
+    errorMessage.value = err.response?.data?.error || 'Erreur serveur'
+  }
+}
+
+
 </script>
