@@ -8,11 +8,16 @@
     "test:unit": "vue-cli-service test:unit"
   },
   "dependencies": {
+    "@vueuse/core": "^13.9.0",
+    "@vueuse/integrations": "^13.9.0",
     "autoprefixer": "^10",
     "axios": "^1.12.1",
+    "js-cookie": "^3.0.5",
+    "jwt-decode": "^4.0.0",
     "pinia": "^3.0.3",
     "postcss": "^8",
     "tailwindcss": "^3",
+    "universal-cookie": "^7.2.2",
     "vue": "^3.2.13",
     "vue-router": "^4.0.3"
   },

@@ -97,22 +97,23 @@
 
 <script setup>
 import { ref } from 'vue'
-import {login}  from '../services/api.js'
+import { useRouter } from 'vue-router'
+import { useAdminStore } from '../stores/adminStore'
+import { login } from '../services/api.js'
 
-// État pour afficher/masquer le mot de passe
-const showPassword = ref(false)
 const email = ref('')
 const password = ref('')
 const errorMessage = ref('')
+const showPassword = ref(false)
+
+const admin = useAdminStore()
+const router = useRouter()
 
 const togglePassword = () => {
   showPassword.value = !showPassword.value
 }
 
-const validateEmail = (email) => {
-  const re = /\S+@\S+\.\S+/
-  return re.test(email)
-}
+const validateEmail = (email) => /\S+@\S+\.\S+/.test(email)
 
 const handleSubmit = async () => {
   errorMessage.value = ''
@@ -129,13 +130,19 @@ const handleSubmit = async () => {
   }
 
   try {
+    console.log(email.value, password.value)
     const data = await login(email.value, password.value)
     console.log('Connecté !', data)
-    // Stocker le token si nécessaire, ex: Pinia ou localStorage
+
+        // Mettre à jour le store
+    admin.setUser({ token: data.token })
+
+    // Redirection après connexion
+    router.push('/test')
   } catch (err) {
     errorMessage.value = err.response?.data?.error || 'Erreur serveur'
   }
 }
 
-
 </script>
+
