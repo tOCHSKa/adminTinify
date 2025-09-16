@@ -22,7 +22,7 @@ const routes = [
     path: '/forbidden',
     name: 'forbidden',
     component: Forbidden,
-    meta: { guest: true } // pas besoin d'auth pour voir le 403
+    meta: { guest: true }
   }
 ]
 
@@ -31,24 +31,28 @@ const router = createRouter({
   routes,
 })
 
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   const admin = useAdminStore()
 
-  // Rediriger un utilisateur déjà loggé qui veut aller sur une page "guest"
-  if (to.meta.guest && admin.isAuthenticated) {
-    return next('/test')
+  // Si le store n'a pas encore fetché l'utilisateur, le faire
+  if (!admin.isAuthenticated && !admin.loading) {
+    await admin.fetchCurrentUser()
   }
 
-  // Vérifier l'authentification
+  // Rediriger un utilisateur déjà connecté vers /admin si c'est une route guest
+  if (to.meta.guest && admin.isAuthenticated) {
+    return next(admin.role === 'admin' ? '/admin' : '/test')
+  }
+
+  // Rediriger si la route nécessite une authentification mais que l'utilisateur n'est pas connecté
   if (to.meta.requiresAuth && !admin.isAuthenticated) {
     return next('/')
   }
 
-  // Vérifier le rôle admin
-  if (to.meta.requiresAdmin && admin.email) {
-    // ⚠️ Ici, on suppose que le token contient la clé "role"
+  // Vérifier le rôle admin pour les routes admin
+  if (to.meta.requiresAdmin && admin.isAuthenticated) {
     if (admin.role !== 'admin') {
-      return next('/forbidden') // ou une page 403
+      return next('/forbidden')
     }
   }
 

@@ -6,14 +6,17 @@ import './assets/tailwind.css';
 import { Icon } from '@iconify/vue'
 import { useAdminStore } from './stores/adminStore'
 
-const app = createApp(App);
-
-app.use(createPinia());
-app.use(router);
-app.component('Icon', Icon)
-
-// Initialiser le store AVANT d’utiliser le router
-const admin = useAdminStore()
-admin.initializeStore()
-
-app.mount('#app');
+async function bootstrap() {
+    const app = createApp(App)
+    app.use(createPinia());
+    app.component('Icon', Icon)
+  
+    // Récupérer l'utilisateur connecté avant de monter l'app
+    const admin = useAdminStore()
+    await admin.fetchCurrentUser()
+  
+    app.use(router)
+    app.mount('#app')
+  }
+  
+  bootstrap()

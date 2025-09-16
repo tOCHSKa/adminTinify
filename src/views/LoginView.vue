@@ -131,12 +131,12 @@ const handleSubmit = async () => {
   }
 
   try {
-    console.log(email.value, password.value)
-    const data = await login(email.value, password.value)
-    console.log('Connecté !', data)
+    // Appel login
+    await login(email.value, password.value)
+    // ✅ Ici le cookie HttpOnly est déjà créé côté serveur
 
-        // Mettre à jour le store
-    admin.setUser({ token: data.token })
+    // Mettre à jour le store en appelant fetchCurrentUser
+    await admin.fetchCurrentUser()
 
     // Redirection après connexion
     if(admin.role === 'admin') {
@@ -145,9 +145,10 @@ const handleSubmit = async () => {
       router.push('/')
     }
   } catch (err) {
-    errorMessage.value = err.response?.data?.error || 'Erreur serveur'
+    errorMessage.value = err.message || 'Erreur serveur'
   }
 }
+
 
 </script>
 
