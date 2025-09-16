@@ -139,7 +139,11 @@ const handleSubmit = async () => {
     admin.setUser({ token: data.token })
 
     // Redirection après connexion
-    router.push('/test')
+    if(admin.role === 'admin') {
+      router.push('/admin')
+    } else {
+      router.push('/')
+    }
   } catch (err) {
     errorMessage.value = err.response?.data?.error || 'Erreur serveur'
   }
