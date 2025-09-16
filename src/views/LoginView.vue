@@ -58,8 +58,8 @@
             aria-label="Afficher ou masquer le mot de passe"
             class="absolute top-1/2 right-2 flex items-center text-gray-500 hover:text-gray-700 focus:outline-none"
           >
-            <span v-if="showPassword">🙈</span>
-            <span v-else>👁️</span>
+            <span v-if="showPassword"><Icon icon="iconamoon:eye-off-thin" width="24" height="24" /></span>
+            <span v-else><Icon icon="iconamoon:eye-light" width="24" height="24" /></span>
           </button>
         </div>
 
@@ -96,6 +96,7 @@
 </template>
 
 <script setup>
+import { Icon } from '@iconify/vue'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAdminStore } from '../stores/adminStore'
