@@ -6,7 +6,7 @@
             <span class="text-xl font-bold text-blue-800">TinifyCloud</span>
         </div>
         <div class="hidden md:flex space-x-8">
-            <a href="/home" class="font-medium hover:text-blue-500">Accueil</a>
+            <a href="/" class="font-medium hover:text-blue-500">Accueil</a>
             <a href="/images" class="font-medium hover:text-blue-500">Images</a>
             <a href="/videos" class="font-medium hover:text-blue-500">Vidéos</a>
             <a href="javascript:void(0)" class="font-medium hover:text-blue-500" @click="scrollToSection('faq')">FAQ</a>

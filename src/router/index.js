@@ -8,7 +8,7 @@ import Forbidden from '../views/Forbidden.vue'
 import HomeView from '../views/HomeView.vue'
 
 const routes = [
-  { path: '/', component: LoginView, meta: { guest: true } },
+  { path: '/logadmin', component: LoginView, meta: { guest: true } },
   { path: '/test', component: TestView, meta: { requiresAuth: true } },
   {
     path: '/admin',
@@ -26,7 +26,7 @@ const routes = [
     meta: { guest: true }
   },
   {
-    path: '/home',
+    path: '/',
     name: 'home',
     component: HomeView,
   }
@@ -47,12 +47,12 @@ router.beforeEach(async (to, from, next) => {
 
   // Rediriger un utilisateur déjà connecté vers /admin si c'est une route guest
   if (to.meta.guest && admin.isAuthenticated) {
-    return next(admin.role === 'admin' ? '/admin' : '/test')
+    return next(admin.role === 'admin' ? '/logadmin' : '/test')
   }
 
   // Rediriger si la route nécessite une authentification mais que l'utilisateur n'est pas connecté
   if (to.meta.requiresAuth && !admin.isAuthenticated) {
-    return next('/')
+    return next('/logadmin')
   }
 
   // Vérifier le rôle admin pour les routes admin
