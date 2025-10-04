@@ -1,11 +1,15 @@
 <template>
   <div>
+    <PageMeta
+    title="TinifyCloud - Compressez vos fichiers rapidement"
+    description="Réduisez la taille de vos images et vidéos sans perdre en qualité, pour un site plus rapide."
+    />
     <Navigation />
-    <Hero />
+    <Hero id="hero"/>
     <HowItWork id="howitwork"/>
     <Testimonials />
     <CallToAction />
-    <Faq />
+    <Faq id="faq"/>
     <Footer />
   </div>
 </template>
@@ -18,6 +22,7 @@ import Testimonials from '@/components/home/Testimonials.vue';
 import CallToAction from '@/components/home/CallToAction.vue';
 import Faq from '@/components/home/Faq.vue';
 import Footer from '@/components/Footer.vue';
+import PageMeta from '@/components/shared/PageMeta.vue';
 </script>
 
 <style scoped>

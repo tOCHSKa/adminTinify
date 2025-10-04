@@ -6,9 +6,9 @@
                 <h1 class="text-4xl md:text-5xl font-bold leading-tight mb-6">Compressez vos fichiers en quelques secondes</h1>
                 <p class="text-xl text-gray-600 mb-8">Réduisez la taille de vos images et vidéos sans perdre en qualité. Gagnez de l'espace et accélérez vos sites web.</p>
                 <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
-                    <a href="#" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-medium text-center transition duration-200">Commencer maintenant</a>
+                    <a href="#" class="bg-blue-800 hover:bg-blue-900 text-white px-6 py-3 rounded-lg font-medium text-center transition duration-200 hover:scale-105">Commencer maintenant</a>
                     <a href="javascript:void(0)" 
-                    @click="scrollToSection"  class="border border-blue-500 text-blue-500 hover:bg-blue-50 px-6 py-3 rounded-lg font-medium text-center transition duration-200">Voir comment ça marche</a>
+                    @click="scrollToSection"  class="border border-blue-800 text-blue-900 hover:bg-blue-50 px-6 py-3 rounded-lg font-medium text-center transition duration-200 hover:scale-105">Voir comment ça marche</a>
                 </div>
                 <div class="mt-8 flex items-center space-x-4">
                     <div class="flex -space-x-2">

@@ -5,6 +5,7 @@ import router from './router';
 import './assets/tailwind.css';
 import { Icon } from '@iconify/vue'
 import { useAdminStore } from './stores/adminStore'
+import { createHead } from '@vueuse/head'
 
 async function bootstrap() {
     const app = createApp(App)
@@ -16,6 +17,7 @@ async function bootstrap() {
     await admin.fetchCurrentUser()
   
     app.use(router)
+    app.use(createHead())
     app.mount('#app')
   }
   

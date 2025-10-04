@@ -11,7 +11,7 @@
                     <div class="flex items-center mb-4">
                         <img src="https://randomuser.me/api/portraits/women/32.jpg" class="w-12 h-12 rounded-full mr-4" alt="Client">
                         <div>
-                            <h4 class="font-semibold">Sophie Martin</h4>
+                            <h3 class="font-semibold">Sophie Martin</h3>
                             <p class="text-gray-500 text-sm">Photographe</p>
                         </div>
                     </div>
@@ -21,7 +21,7 @@
                     <div class="flex items-center mb-4">
                         <img src="https://randomuser.me/api/portraits/men/54.jpg" class="w-12 h-12 rounded-full mr-4" alt="Client">
                         <div>
-                            <h4 class="font-semibold">Thomas Leroy</h4>
+                            <h3 class="font-semibold">Thomas Leroy</h3>
                             <p class="text-gray-500 text-sm">Développeur web</p>
                         </div>
                     </div>
@@ -31,7 +31,7 @@
                     <div class="flex items-center mb-4">
                         <img src="https://randomuser.me/api/portraits/women/67.jpg" class="w-12 h-12 rounded-full mr-4" alt="Client">
                         <div>
-                            <h4 class="font-semibold">Élodie Bernard</h4>
+                            <h3 class="font-semibold">Élodie Bernard</h3>
                             <p class="text-gray-500 text-sm">Community Manager</p>
                         </div>
                     </div>
