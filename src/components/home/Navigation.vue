@@ -15,6 +15,7 @@
             <a href="/login" class="font-medium hover:text-blue-500 hidden md:block">Connexion</a>
             <a href="/register" class="bg-blue-800 hover:bg-blue-900 text-white px-4 py-2 rounded-lg font-medium transition duration-200 hover:scale-105">Commencer</a>
         </div>
+        
         <button class="md:hidden">
             <i data-feather="menu" class="w-6 h-6"></i>
         </button>
