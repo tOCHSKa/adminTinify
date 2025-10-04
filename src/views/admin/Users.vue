@@ -32,7 +32,7 @@
           <td class="p-2">{{ user.UUID }}</td>
           <td class="p-2">{{ user.createdAt.split('T')[0] }}</td>
           <td class="p-2">{{ user.plan }}</td>
-          <td class="p-2">{{ user.lastLogin }}</td>
+          <td class="p-2">{{ formatDateTime(user.lastLogin) }}</td>
           <td class="p-2">{{ user.compressionCount }}</td>
           <td class="p-2">
             <button @click="deleteUser(user._id)" class="text-red-600 hover:underline">
@@ -65,5 +65,14 @@ const deleteUser = async (id) => {
 
 const updateRole = async (user) => {
   await userStore.updateUserRole(user._id, user.role)
+}
+
+// ➜ Fonction de formatage
+const formatDateTime = (isoString) => {
+  if (!isoString) return '—'
+  return new Date(isoString).toLocaleString('fr-FR', {
+    dateStyle: 'short',
+    timeStyle: 'short'
+  })
 }
 </script>

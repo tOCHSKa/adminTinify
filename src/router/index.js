@@ -5,6 +5,7 @@ import LoginView from '../views/LoginView.vue'
 import TestView from '../views/testView.vue'
 import AdminLayout from '@/layouts/AdminLayout.vue'
 import Forbidden from '../views/Forbidden.vue'
+import HomeView from '../views/HomeView.vue'
 
 const routes = [
   { path: '/', component: LoginView, meta: { guest: true } },
@@ -23,6 +24,11 @@ const routes = [
     name: 'forbidden',
     component: Forbidden,
     meta: { guest: true }
+  },
+  {
+    path: '/home',
+    name: 'home',
+    component: HomeView,
   }
 ]
 
