@@ -13,7 +13,7 @@
     "@vueuse/head": "^2.0.0",
     "@vueuse/integrations": "^13.9.0",
     "autoprefixer": "^10",
-    "axios": "^1.12.1",
+    "axios": "^1.12.2",
     "feather-icons": "^4.29.2",
     "js-cookie": "^3.0.5",
     "jwt-decode": "^4.0.0",

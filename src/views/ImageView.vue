@@ -17,6 +17,7 @@ import Footer from '@/components/Footer.vue';
 import PageMeta from '@/components/shared/PageMeta.vue';
 import Dropzone from '@/components/image/dropzone.vue';
 import Features from '@/components/image/features.vue';
+
 </script>
 
 <style scoped>

@@ -1,4 +1,8 @@
 <template>
+      <PageMeta
+        title="TinifyCloud - Compressez vos fichiers rapidement"
+        description="Réduisez la taille de vos images et vidéos sans perdre en qualité, pour un site plus rapide."
+      />
   <main 
     class="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 via-white to-indigo-100"
     aria-label="Page de connexion"
@@ -101,6 +105,7 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAdminStore } from '../stores/adminStore'
 import { login } from '../services/api.js'
+import PageMeta from '@/components/shared/PageMeta.vue';
 
 const email = ref('')
 const password = ref('')
