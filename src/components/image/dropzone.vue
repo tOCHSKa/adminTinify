@@ -94,7 +94,9 @@
               :class="{ 'opacity-50 cursor-not-allowed': files.length === 0 || isCompressing }"
               :disabled="files.length === 0 || isCompressing"
             >
-              Compresser maintenant
+              <span v-if="!adminStore.isAuthenticated">🔒 Connectez-vous pour compresser</span>
+              <span v-else-if="isCompressing">Compression en cours...</span>
+              <span v-else>Compresser maintenant</span>
             </button>
           </div>
         </div>
@@ -145,6 +147,7 @@
   import feather from 'feather-icons'
   import axios from 'axios'
   import Toast from '@/components/Toast.vue'
+  import { useAdminStore } from '@/stores/adminStore'
   
   const toast = ref(null)
   const files = ref([])
@@ -156,7 +159,7 @@
   const progress = ref(0)
   const zipUrl = ref('')
   const lightboxImage = ref(null)
-  
+  const adminStore = useAdminStore()
   onMounted(() => feather.replace())
   
   const handleDragOver = () => dropzoneActive.value = true
@@ -168,49 +171,63 @@
   }
   const handleFileUpload = (event) => addFiles(Array.from(event.target.files))
   
-  /**
-   * Ajout de fichiers avec validation
-   */
-  const addFiles = (newFiles) => {
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
-    const errors = []
-  
-    if (files.value.length + newFiles.length > MAX_FILES) {
-      toast.value.showToast(`⚠️ Vous ne pouvez pas dépasser ${MAX_FILES} fichiers.`)
+/**
+ * Ajout de fichiers avec validation
+ */
+ const addFiles = (newFiles) => {
+  if (!adminStore.isAuthenticated) {
+    toast.value.showToast('🔒 Connectez-vous pour ajouter des fichiers')
+    return
+  }
+
+  const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
+  const errors = []
+  let addedCount = 0 // compteur pour les fichiers valides
+
+  if (files.value.length + newFiles.length > MAX_FILES) {
+    toast.value.showToast(`⚠️ Vous ne pouvez pas dépasser ${MAX_FILES} fichiers.`)
+    return
+  }
+
+  newFiles.forEach(file => {
+    if (!allowedTypes.includes(file.type)) {
+      errors.push(`❌ ${file.name} : format non supporté`)
       return
     }
-  
-    newFiles.forEach(file => {
-      if (!allowedTypes.includes(file.type)) {
-        errors.push(`❌ ${file.name} : format non supporté`)
-        return
-      }
-  
-      if (file.size > MAX_SIZE) {
-        errors.push(`⚠️ ${file.name} : dépasse 10 Mo`)
-        return
-      }
-  
-      const duplicate = files.value.some(f => f.file.name === file.name && f.file.size === file.size)
-      if (duplicate) {
-        errors.push(`⚠️ ${file.name} : déjà ajouté`)
-        return
-      }
-  
-      const reader = new FileReader()
-      reader.onload = (e) => {
-        files.value.push({ file, preview: e.target.result })
-        fileCount.value = files.value.length
-      }
-      reader.readAsDataURL(file)
-    })
-  
-    if (errors.length > 0) {
-      errors.forEach(msg => toast.value.showToast(msg))
-    } else {
-      toast.value.showToast('✅ Fichiers ajoutés avec succès')
+
+    if (file.size > MAX_SIZE) {
+      errors.push(`⚠️ ${file.name} : dépasse 10 Mo`)
+      return
     }
+
+    const duplicate = files.value.some(f => f.file.name === file.name && f.file.size === file.size)
+    if (duplicate) {
+      errors.push(`⚠️ ${file.name} : déjà ajouté`)
+      return
+    }
+
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      files.value.push({ file, preview: e.target.result })
+      fileCount.value = files.value.length
+      addedCount++ // incrémente pour chaque ajout réussi
+    }
+    reader.readAsDataURL(file)
+  })
+
+  // Affiche les erreurs si besoin
+  if (errors.length > 0) {
+    errors.forEach(msg => toast.value.showToast(msg))
   }
+
+  // Message dynamique de succès
+  if (addedCount > 0) {
+    toast.value.showToast(
+      `✅ ${addedCount} fichier${addedCount > 1 ? 's' : ''} ajouté${addedCount > 1 ? 's' : ''} avec succès`
+    )
+  }
+}
+
   
   /**
    * Suppression d’un fichier
@@ -240,6 +257,10 @@
   
     isCompressing.value = true
     progress.value = 0
+    if(!adminStore.isAuthenticated) {
+      toast.value.showToast('❌ Vous devez être connecté pour compresser des fichiers')
+      return
+    }
   
     try {
       const formData = new FormData()
