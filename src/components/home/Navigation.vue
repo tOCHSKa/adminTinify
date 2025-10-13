@@ -11,9 +11,13 @@
             <a href="/videos" class="font-medium hover:text-blue-500">Vidéos</a>
             <a href="javascript:void(0)" class="font-medium hover:text-blue-500" @click="scrollToSection('faq')">FAQ</a>
         </div>
-        <div class="flex items-center space-x-4">
+        <div class="flex items-center space-x-4" v-if="!admin.isAuthenticated">
             <a href="/logadmin" class="font-medium hover:text-blue-500 hidden md:block">Connexion</a>
             <a href="/register" class="bg-blue-800 hover:bg-blue-900 text-white px-4 py-2 rounded-lg font-medium transition duration-200 hover:scale-105">Commencer</a>
+        </div>
+        <div class="flex items-center space-x-4" v-else>
+            <a href="/profil" class="bg-blue-800 hover:bg-blue-900 text-white px-4 py-2 rounded-lg font-medium transition duration-200 hover:scale-105">Mon compte</a>
+            <a href="/images" class="font-medium hover:text-blue-500 hidden md:block" @click="admin.logout">Déconnexion</a>
         </div>
         
         <button class="md:hidden">
@@ -23,6 +27,12 @@
 </template>
 
 <script setup>
+
+import { useAdminStore } from '@/stores/adminStore'
+const admin = useAdminStore();
+
+admin.fetchCurrentUser();
+
 const scrollToSection = (id) => {
   const el = document.getElementById(id);
   if (el) {
