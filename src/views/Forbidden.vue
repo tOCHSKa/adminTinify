@@ -1,4 +1,8 @@
 <template>
+  <PageMeta
+    title="403 - Accès refusé | TinifyCloud"
+    description="Vous n'avez pas l'autorisation d'accéder à cette page sur TinifyCloud."
+  />
     <main class="flex items-center justify-center min-h-screen bg-gray-100">
       <div class="text-center">
         <h1 class="text-6xl font-bold text-red-600">403</h1>
@@ -12,4 +16,7 @@
       </div>
     </main>
   </template>
+  <script setup>
+import PageMeta from '@/components/shared/PageMeta.vue';
+</script>
   

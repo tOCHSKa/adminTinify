@@ -80,8 +80,17 @@
       <div class="">
         <!-- Déconnexion -->
         <RouterLink
-        to="/logout" @click="handleLogout"
-        class="flex items-center  rounded hover:bg-gray-600 mt-auto text-red-600 mx-2 p-2"
+        to="/"
+        class="flex items-center p-2 rounded hover:bg-gray-600 ml-2"
+        >
+        Accueil
+      </RouterLink>
+      </div>
+      <div class="">
+        <!-- Déconnexion -->
+        <RouterLink
+        to="/"
+        class="flex items-center rounded hover:bg-gray-600 mt-auto text-red-600 mx-2 p-2"
         >
         <Icon icon="mdi:logout" class="mr-2" />
         Déconnexion

@@ -1,8 +1,8 @@
 <template>
-      <PageMeta
-        title="TinifyCloud - Compressez vos fichiers rapidement"
-        description="Réduisez la taille de vos images et vidéos sans perdre en qualité, pour un site plus rapide."
-      />
+  <PageMeta
+    title="Connexion | TinifyCloud"
+    description="Connectez-vous à TinifyCloud pour compresser, gérer et télécharger vos fichiers en toute simplicité."
+  />
   <main 
     class="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 via-white to-indigo-100"
     aria-label="Page de connexion"
