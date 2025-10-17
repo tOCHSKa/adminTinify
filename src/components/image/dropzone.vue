@@ -161,6 +161,8 @@
   const zipUrl = ref('')
   const lightboxImage = ref(null)
   const adminStore = useAdminStore()
+  const baseURL = process.env.VUE_APP_API_URL
+  
   onMounted(() => feather.replace())
   
   const handleDragOver = () => dropzoneActive.value = true
@@ -267,7 +269,7 @@
       const formData = new FormData()
       files.value.forEach(f => formData.append('file', f.file))
   
-      const response = await axios.post('http://localhost:3000/uploads/image', formData, {
+      const response = await axios.post(`${baseURL}/uploads/image`, formData, {
         withCredentials: true,
         responseType: 'blob',
         timeout: 30000,
