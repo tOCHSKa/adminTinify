@@ -1,14 +1,13 @@
 // Base URL selon l'environnement
-const baseURL = 'http://localhost:3000'
+const baseURL = process.env.VUE_APP_API_URL
 
 // ---- LOGIN ----
-// Le backend place déjà le cookie 'token' (httpOnly) dans la réponse
 export const login = async (email, password) => {
   const response = await fetch(`${baseURL}/users/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email, password }),
-    credentials: 'include',
+    credentials: 'include', // nécessaire pour les cookies cross-site
   })
 
   if (!response.ok) {
