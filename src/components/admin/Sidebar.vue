@@ -86,15 +86,35 @@
         Accueil
       </RouterLink>
       </div>
-      <div class="">
-        <!-- Déconnexion -->
+      <div class="relative">
+        <!-- Bouton Déconnexion -->
         <RouterLink
-        to="/"
-        class="flex items-center rounded hover:bg-gray-600 mt-auto text-red-600 mx-2 p-2"
+          to="#"
+          @click.prevent="handleLoggedOut"
+          class="flex items-center rounded hover:bg-gray-600 mt-auto text-red-600 mx-2 p-2"
         >
-        <Icon icon="mdi:logout" class="mr-2" />
-        Déconnexion
-      </RouterLink>
+          <Icon icon="mdi:logout" class="mr-2" />
+          Déconnexion
+        </RouterLink>
+
+        <!-- Popup confirmation -->
+        <div v-if="loggedOut" class="bg-gray-700 text-white p-3 rounded shadow-md mt-2 mx-2">
+          <p class="mb-2 text-sm">Êtes-vous sûr de vouloir vous déconnecter ?</p>
+          <div class="flex justify-end space-x-2">
+            <button
+              @click="handleLoggedOut"
+              class="px-3 py-1 rounded bg-gray-600 hover:bg-gray-500 text-white text-sm"
+            >
+              Non
+            </button>
+            <button
+              @click="handleLogout"
+              class="px-3 py-1 rounded bg-red-600 hover:bg-red-500 text-white text-sm"
+            >
+              Oui
+            </button>
+          </div>
+        </div>
       </div>
     </nav>
 
@@ -106,12 +126,25 @@
 import { Icon } from '@iconify/vue'
 import { useAdminStore } from '@/stores/adminStore'
 import { useRouter } from 'vue-router'
+import { ref } from 'vue'
+import { inject } from 'vue'
 
 const adminStore = useAdminStore()
 const router = useRouter()
 
+const toast = inject('toast')
+const loggedOut = ref(false)
+
+const handleLoggedOut = () => {
+  loggedOut.value = !loggedOut.value
+}
+
 const handleLogout = () => {
   adminStore.logout()
-  router.push('/')
+  toast.showToast('🔒 Vous êtes maintenant déconnecté')
+    router.push('/')
 }
+
+
+
 </script>

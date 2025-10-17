@@ -1,4 +1,5 @@
 <template>
+
     <!-- Navigation -->
     <nav class="container mx-auto px-6 py-4 flex justify-between items-center relative">
       <!-- Logo -->
@@ -38,11 +39,11 @@
           <!-- Sous-menu -->
           <div
             v-show="open"
-            class="absolute left-0 top-full mt-0 w-44 bg-white shadow-lg rounded-md z-50 transition-all duration-200"
+            class="absolute left-0 top-full mt-0 w-44 bg-white shadow-lg rounded-lg z-50 transition-all duration-200"
           >
             <a
               href="/images"
-              class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50"
+              class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 "
             >
               Compresser images
             </a>
@@ -80,15 +81,42 @@
         <a
           href="/profil"
           class="bg-blue-800 hover:bg-blue-900 text-white px-4 py-2 rounded-lg font-medium transition duration-200 hover:scale-105"
-        >Mon compte</a>
-        <button
-          class="font-medium hover:text-blue-500 hidden md:block"
-          @click="admin.logout"
         >
-          Déconnexion
-        </button>
+          Mon compte
+        </a>
+
+        <!-- Bouton Déconnexion avec confirmation -->
+        <div class="relative">
+          <button
+            class="font-medium hover:text-blue-500 hidden md:block"
+            @click="toggleLogoutConfirm"
+          >
+            Déconnexion
+          </button>
+
+          <!-- Popup confirmation -->
+          <div
+            v-if="showLogoutConfirm"
+            class="absolute right-0 mt-8 w-48 bg-white shadow-lg rounded-md p-3 z-50 text-gray-800"
+          >
+            <p class="text-sm mb-2">Êtes-vous sûr de vouloir vous déconnecter ?</p>
+            <div class="flex justify-end space-x-2">
+              <button
+                @click="toggleLogoutConfirm"
+                class="px-2 py-1 rounded bg-gray-200 hover:bg-gray-300 text-sm"
+              >
+                Non
+              </button>
+              <button
+                @click="handleLogout"
+                class="px-2 py-1 rounded bg-red-600 hover:bg-red-500 text-white text-sm"
+              >
+                Oui
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
-  
       <!-- Menu mobile -->
       <button class="md:hidden">
         <i data-feather="menu" class="w-6 h-6"></i>
@@ -99,14 +127,18 @@
   <script setup>
   import { ref } from 'vue'
   import { useAdminStore } from '@/stores/adminStore'
+  import { useRouter } from 'vue-router'
+  import { inject } from 'vue'
   
   // Store utilisateur
   const admin = useAdminStore()
   admin.fetchCurrentUser()
-  
+  const router = useRouter()
+
   // État du sous-menu
   const open = ref(false)
-  
+  const showLogoutConfirm = ref(false)
+
   const openMenu = () => (open.value = true)
   const closeMenu = () => (open.value = false)
   const toggleMenu = () => (open.value = !open.value)
@@ -116,6 +148,19 @@
     const el = document.getElementById(id)
     if (el) el.scrollIntoView({ behavior: 'smooth' })
   }
+
+const toggleLogoutConfirm = () => {
+  showLogoutConfirm.value = !showLogoutConfirm.value
+}
+
+const toast = inject('toast')
+const handleLogout = () => {
+  admin.logout()
+  toast.showToast('🔒 Vous êtes maintenant déconnecté')
+  router.push('/')
+}
+
+
   </script>
   
   <style scoped>

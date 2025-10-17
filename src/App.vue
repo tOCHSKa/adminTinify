@@ -1,14 +1,16 @@
 <template>
-  <div id="app">
-    <!-- Le routeur gère l’affichage des pages -->
-    <router-view />
-  </div>
+  <router-view />
+  <Toast ref="toastRef" />
 </template>
 
 <script setup>
-// Pas de logique ici pour l’instant
-</script>
+import Toast from '@/components/Toast.vue'
+import { ref, onMounted, provide } from 'vue'
 
-<style>
-/* Pas de style spécifique, Tailwind s’occupe du reste */
-</style>
+const toastRef = ref(null)
+
+// Fournir le toast **après que le composant soit monté**
+onMounted(() => {
+  provide('toast', toastRef.value)
+})
+</script>

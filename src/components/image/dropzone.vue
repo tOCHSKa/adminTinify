@@ -148,8 +148,9 @@
   import axios from 'axios'
   import Toast from '@/components/Toast.vue'
   import { useAdminStore } from '@/stores/adminStore'
-  
-  const toast = ref(null)
+  import { inject } from 'vue'
+
+ const toast = inject('toast')
   const files = ref([])
   const fileCount = ref(0)
   const dropzoneActive = ref(false)
@@ -176,7 +177,7 @@
  */
  const addFiles = (newFiles) => {
   if (!adminStore.isAuthenticated) {
-    toast.value.showToast('🔒 Connectez-vous pour ajouter des fichiers')
+    toast.showToast('🔒 Connectez-vous pour ajouter des fichiers')
     return
   }
 
@@ -185,7 +186,7 @@
   let addedCount = 0 // compteur pour les fichiers valides
 
   if (files.value.length + newFiles.length > MAX_FILES) {
-    toast.value.showToast(`⚠️ Vous ne pouvez pas dépasser ${MAX_FILES} fichiers.`)
+    toast.showToast(`⚠️ Vous ne pouvez pas dépasser ${MAX_FILES} fichiers.`)
     return
   }
 
@@ -217,12 +218,12 @@
 
   // Affiche les erreurs si besoin
   if (errors.length > 0) {
-    errors.forEach(msg => toast.value.showToast(msg))
+    errors.forEach(msg => toast.showToast(msg))
   }
 
   // Message dynamique de succès
   if (addedCount > 0) {
-    toast.value.showToast(
+    toast.showToast(
       `✅ ${addedCount} fichier${addedCount > 1 ? 's' : ''} ajouté${addedCount > 1 ? 's' : ''} avec succès`
     )
   }
@@ -235,7 +236,7 @@
   const removeFile = (index) => {
     files.value.splice(index, 1)
     fileCount.value = files.value.length
-    toast.value.showToast('🗑️ Fichier supprimé')
+    toast.showToast('🗑️ Fichier supprimé')
   }
   
   /**
@@ -246,7 +247,7 @@
     fileCount.value = 0
     zipUrl.value = ''
     document.getElementById('file-upload').value = ''
-    toast.value.showToast('🔄 Liste réinitialisée')
+    toast.showToast('🔄 Liste réinitialisée')
   }
   
   /**
@@ -258,7 +259,7 @@
     isCompressing.value = true
     progress.value = 0
     if(!adminStore.isAuthenticated) {
-      toast.value.showToast('❌ Vous devez être connecté pour compresser des fichiers')
+      toast.showToast('❌ Vous devez être connecté pour compresser des fichiers')
       return
     }
   
@@ -277,7 +278,7 @@
   
       const url = window.URL.createObjectURL(response.data)
       zipUrl.value = url
-      toast.value.showToast('✅ Compression terminée, ZIP prêt à télécharger !')
+      toast.showToast('✅ Compression terminée, ZIP prêt à télécharger !')
   
       files.value = []
       fileCount.value = 0
@@ -285,7 +286,7 @@
     } catch (err) {
       console.error(err)
       isCompressing.value = false
-      toast.value.showToast('❌ Erreur lors de la compression')
+      toast.showToast('❌ Erreur lors de la compression')
     }
   }
   
@@ -294,7 +295,7 @@
    */
   const downloadZip = () => {
     if (!zipUrl.value) return
-    toast.value.showToast('💾 ZIP téléchargé')
+    toast.showToast('💾 ZIP téléchargé')
     setTimeout(() => {
       window.URL.revokeObjectURL(zipUrl.value)
       zipUrl.value = ''
