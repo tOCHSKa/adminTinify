@@ -153,10 +153,10 @@ const toggleLogoutConfirm = () => {
   showLogoutConfirm.value = !showLogoutConfirm.value
 }
 
-const toast = inject('toast')
+const toastRef = inject('toast')
 const handleLogout = () => {
   admin.logout()
-  toast.showToast('🔒 Vous êtes maintenant déconnecté')
+  toastRef.value?.showToast('🔒 Vous êtes maintenant déconnecté')
   router.push('/')
 }
 

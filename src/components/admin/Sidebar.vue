@@ -132,7 +132,7 @@ import { inject } from 'vue'
 const adminStore = useAdminStore()
 const router = useRouter()
 
-const toast = inject('toast')
+const toastRef = inject('toast')
 const loggedOut = ref(false)
 
 const handleLoggedOut = () => {
@@ -141,7 +141,7 @@ const handleLoggedOut = () => {
 
 const handleLogout = () => {
   adminStore.logout()
-  toast.showToast('🔒 Vous êtes maintenant déconnecté')
+  toastRef.value?.showToast('🔒 Vous êtes maintenant déconnecté')
     router.push('/')
 }
 

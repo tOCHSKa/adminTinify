@@ -5,12 +5,10 @@
 
 <script setup>
 import Toast from '@/components/Toast.vue'
-import { ref, onMounted, provide } from 'vue'
+import { ref, provide } from 'vue'
 
 const toastRef = ref(null)
 
-// Fournir le toast **après que le composant soit monté**
-onMounted(() => {
-  provide('toast', toastRef.value)
-})
+// Fournir le ref lui-même, pas sa valeur
+provide('toast', toastRef)
 </script>
