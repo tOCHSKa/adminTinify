@@ -2,7 +2,6 @@
 import { defineStore } from 'pinia'
 import { logout as apiLogout } from '../services/api.js'
 
-
 const baseURL = process.env.VUE_APP_API_URL
 
 export const useAdminStore = defineStore('admin', {
@@ -14,7 +13,10 @@ export const useAdminStore = defineStore('admin', {
   }),
 
   actions: {
-    /** Récupère les infos de l'utilisateur connecté via /me */
+    /** 
+     * Récupère les infos de l'utilisateur connecté via /me
+     * Silencieux : aucune erreur n'est throwée pour ne pas polluer la console
+     */
     async fetchCurrentUser() {
       this.loading = true
       this.error = null
@@ -23,18 +25,11 @@ export const useAdminStore = defineStore('admin', {
           method: 'GET',
           credentials: 'include',
         })
-
+        // Si le token/cookie est invalide ou user non connecté
         if (!res.ok) {
-          if (res.status === 401) {
-            // Utilisateur non connecté, on ignore silencieusement
-            this.user = null
-            this.isAuthenticated = false
-          } else {
-            const err = await res.json()
-            this.error = err.error || 'Erreur serveur'
-            this.user = null
-            this.isAuthenticated = false
-          }
+          this.user = null
+          this.isAuthenticated = false
+          // Pas de throw pour rester silencieux
           return
         }
 
@@ -42,14 +37,17 @@ export const useAdminStore = defineStore('admin', {
         this.user = data
         this.isAuthenticated = true
       } catch (err) {
+        // Silencieux : on reset juste l'état
         this.user = null
         this.isAuthenticated = false
-        this.error = err.message
       } finally {
         this.loading = false
       }
     },
 
+    /**
+     * Déconnexion de l'utilisateur
+     */
     async logout() {
       this.loading = true
       this.error = null
@@ -62,7 +60,7 @@ export const useAdminStore = defineStore('admin', {
         this.isAuthenticated = false
         this.loading = false
       }
-    }
+    },
   },
 
   getters: {
