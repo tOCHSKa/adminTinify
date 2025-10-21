@@ -29,7 +29,6 @@ export const useAdminStore = defineStore('admin', {
         if (!res.ok) {
           this.user = null
           this.isAuthenticated = false
-          // Pas de throw pour rester silencieux
           return
         }
 
