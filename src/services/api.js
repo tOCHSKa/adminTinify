@@ -19,4 +19,47 @@ export const login = async (email, password) => {
   return await response.json()
 }
 
-export default { login }
+export const register = async (email, password) => {
+  try {
+    const response = await fetch(`${baseURL}/users/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    });
+
+    // Essaye de parser la réponse JSON, même si le corps est vide
+    const data = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+      throw new Error(data.error || 'Erreur lors de l’inscription.');
+    }
+
+    return data;
+  } catch (err) {
+    // Gestion des erreurs réseau (serveur hors ligne, CORS, etc.)
+    throw new Error(err.message || 'Erreur réseau');
+  }
+};
+
+export const logout = async () => {
+  try {
+    const response = await fetch(`${baseURL}/users/logout`, {
+      method: 'POST',
+      credentials: 'include', // indispensable pour effacer le cookie JWT
+    });
+
+    const data = await response.json().catch(() => ({})); // éviter erreur si pas de body
+
+    if (!response.ok) {
+      throw new Error(data.error || 'Erreur lors de la déconnexion.');
+    }
+
+    return data; // exemple: { message: 'Déconnecté avec succès' }
+
+  } catch (err) {
+    throw new Error(err.message || 'Erreur réseau');
+  }
+};
+
+
+export default { login, register, logout }

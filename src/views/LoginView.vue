@@ -3,6 +3,7 @@
     title="Connexion | TinifyCloud"
     description="Connectez-vous à TinifyCloud pour compresser, gérer et télécharger vos fichiers en toute simplicité."
   />
+  <Navbar />
   <main 
     class="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 via-white to-indigo-100"
     aria-label="Page de connexion"
@@ -106,6 +107,7 @@ import { useRouter } from 'vue-router'
 import { useAdminStore } from '../stores/adminStore'
 import { login } from '../services/api.js'
 import PageMeta from '@/components/shared/PageMeta.vue';
+import Navbar from '@/components/home/Navigation.vue';
 
 const email = ref('')
 const password = ref('')

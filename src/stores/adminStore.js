@@ -1,5 +1,7 @@
 // src/stores/adminStore.js
 import { defineStore } from 'pinia'
+import { logout as apiLogout } from '../services/api.js'
+
 
 const baseURL = process.env.VUE_APP_API_URL
 
@@ -48,16 +50,19 @@ export const useAdminStore = defineStore('admin', {
       }
     },
 
-    logout() {
-      this.user = null
-      this.isAuthenticated = false
+    async logout() {
+      this.loading = true
       this.error = null
-      // Optionnel : faire un fetch POST /logout côté serveur pour supprimer le cookie HttpOnly
-      fetch(`${baseURL}/users/logout`, {
-        method: 'POST',
-        credentials: 'include', 
-      })
-    },
+      try {
+        await apiLogout()
+      } catch (err) {
+        this.error = err.message || 'Erreur lors de la déconnexion'
+      } finally {
+        this.user = null
+        this.isAuthenticated = false
+        this.loading = false
+      }
+    }
   },
 
   getters: {

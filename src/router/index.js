@@ -7,6 +7,7 @@ import ImageView from '@/views/ImageView.vue'
 import TestView from '../views/testView.vue'
 import Forbidden from '../views/Forbidden.vue'
 import AdminLayout from '@/layouts/AdminLayout.vue'
+import RegisterView from '@/views/RegisterView.vue'
 
 const routes = [
   { path: '/login', name: 'login', component: LoginView, meta: { guest: true } },
@@ -23,6 +24,7 @@ const routes = [
       { path: 'users', name: 'admin-users', component: () => import('@/views/admin/Users.vue') },
     ]
   },
+  { path: '/register', name: 'register', component: RegisterView, meta: { guest: true } },
 ]
 
 const router = createRouter({
