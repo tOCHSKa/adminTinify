@@ -143,41 +143,58 @@
   </template>
   
   <script setup>
-  import { ref, onMounted } from 'vue'
-  import feather from 'feather-icons'
-  import axios from 'axios'
-  import Toast from '@/components/Toast.vue'
-  import { useAdminStore } from '@/stores/adminStore'
-  import { inject } from 'vue'
+ import { ref, onMounted, inject } from 'vue'
+import feather from 'feather-icons'
+import axios from 'axios'
+import Toast from '@/components/Toast.vue'
+import { useAdminStore } from '@/stores/adminStore'
 
- const toastRef = inject('toast')
-  const files = ref([])
-  const fileCount = ref(0)
-  const dropzoneActive = ref(false)
-  const MAX_SIZE = 10 * 1024 * 1024
-  const MAX_FILES = 20
-  const isCompressing = ref(false)
-  const progress = ref(0)
-  const zipUrl = ref('')
-  const lightboxImage = ref(null)
-  const adminStore = useAdminStore()
-  const baseURL = process.env.VUE_APP_API_URL
-  
-  onMounted(() => feather.replace())
-  
-  const handleDragOver = () => dropzoneActive.value = true
-  const handleDragLeave = () => dropzoneActive.value = false
-  const handleDrop = (event) => {
-    dropzoneActive.value = false
-    const droppedFiles = Array.from(event.dataTransfer.files)
-    addFiles(droppedFiles)
-  }
-  const handleFileUpload = (event) => addFiles(Array.from(event.target.files))
-  
+/**
+ * Références et état réactif
+ */
+const toastRef = inject('toast')       // Référence au composant Toast global
+const files = ref([])                  // Liste des fichiers ajoutés
+const fileCount = ref(0)               // Nombre de fichiers
+const dropzoneActive = ref(false)      // Etat visuel du dropzone
+const MAX_SIZE = 10 * 1024 * 1024      // Taille max d'un fichier (10 Mo)
+const MAX_FILES = 20                    // Nombre max de fichiers
+const isCompressing = ref(false)       // Indique si la compression est en cours
+const progress = ref(0)                // Progression de la compression (%)
+const zipUrl = ref('')                 // URL du ZIP généré
+const lightboxImage = ref(null)        // Image affichée dans la lightbox
+const adminStore = useAdminStore()     // Store utilisateur
+const baseURL = process.env.VUE_APP_API_URL
+
+/**
+ * Initialisation des icônes Feather
+ */
+onMounted(() => feather.replace())
+
+/**
+ * --- Gestion du drag & drop ---
+ */
+const handleDragOver = () => dropzoneActive.value = true
+const handleDragLeave = () => dropzoneActive.value = false
+const handleDrop = (event) => {
+  dropzoneActive.value = false
+  const droppedFiles = Array.from(event.dataTransfer.files)
+  addFiles(droppedFiles)
+}
+
+/**
+ * Gestion du upload via input file
+ */
+const handleFileUpload = (event) => addFiles(Array.from(event.target.files))
+
 /**
  * Ajout de fichiers avec validation
+ * - Vérifie la connexion utilisateur
+ * - Vérifie le type MIME et la taille
+ * - Evite les doublons
+ * - Génère un aperçu (DataURL) pour les images
+ * - Affiche des toasts dynamiques
  */
- const addFiles = (newFiles) => {
+const addFiles = (newFiles) => {
   if (!adminStore.isAuthenticated) {
     toastRef.value?.showToast('🔒 Connectez-vous pour ajouter des fichiers')
     return
@@ -197,12 +214,10 @@
       errors.push(`❌ ${file.name} : format non supporté`)
       return
     }
-
     if (file.size > MAX_SIZE) {
       errors.push(`⚠️ ${file.name} : dépasse 10 Mo`)
       return
     }
-
     const duplicate = files.value.some(f => f.file.name === file.name && f.file.size === file.size)
     if (duplicate) {
       errors.push(`⚠️ ${file.name} : déjà ajouté`)
@@ -213,17 +228,15 @@
     reader.onload = (e) => {
       files.value.push({ file, preview: e.target.result })
       fileCount.value = files.value.length
-      addedCount++ // incrémente pour chaque ajout réussi
+      addedCount++
     }
     reader.readAsDataURL(file)
   })
 
-  // Affiche les erreurs si besoin
-  if (errors.length > 0) {
-    errors.forEach(msg => toastRef.value?.showToast(msg))
-  }
+  // Affiche les erreurs
+  errors.forEach(msg => toastRef.value?.showToast(msg))
 
-  // Message dynamique de succès
+  // Message de succès
   if (addedCount > 0) {
     toastRef.value?.showToast(
       `✅ ${addedCount} fichier${addedCount > 1 ? 's' : ''} ajouté${addedCount > 1 ? 's' : ''} avec succès`
@@ -231,84 +244,88 @@
   }
 }
 
-  
-  /**
-   * Suppression d’un fichier
-   */
-  const removeFile = (index) => {
-    files.value.splice(index, 1)
-    fileCount.value = files.value.length
-    toastRef.value?.showToast('🗑️ Fichier supprimé')
+/**
+ * Suppression d’un fichier
+ * @param {number} index - Index du fichier dans la liste
+ */
+const removeFile = (index) => {
+  files.value.splice(index, 1)
+  fileCount.value = files.value.length
+  toastRef.value?.showToast('🗑️ Fichier supprimé')
+}
+
+/**
+ * Réinitialisation de la liste de fichiers
+ */
+const resetFiles = () => {
+  files.value = []
+  fileCount.value = 0
+  zipUrl.value = ''
+  document.getElementById('file-upload').value = ''
+  toastRef.value?.showToast('🔄 Liste réinitialisée')
+}
+
+/**
+ * Compression via backend
+ * - Upload les fichiers vers l’API
+ * - Gère la progression via `onUploadProgress`
+ * - Retourne un blob pour téléchargement
+ */
+const compressFiles = async () => {
+  if (files.value.length === 0) return
+  if (!adminStore.isAuthenticated) {
+    toastRef.value?.showToast('❌ Vous devez être connecté pour compresser des fichiers')
+    return
   }
-  
-  /**
-   * Réinitialisation
-   */
-  const resetFiles = () => {
+
+  isCompressing.value = true
+  progress.value = 0
+
+  try {
+    const formData = new FormData()
+    files.value.forEach(f => formData.append('file', f.file))
+
+    const response = await axios.post(`${baseURL}/uploads/image`, formData, {
+      withCredentials: true,
+      responseType: 'blob',
+      timeout: 30000,
+      onUploadProgress: (event) => {
+        progress.value = Math.round((event.loaded * 100) / event.total)
+      }
+    })
+
+    zipUrl.value = window.URL.createObjectURL(response.data)
+    toastRef.value?.showToast('✅ Compression terminée, ZIP prêt à télécharger !')
+
+    // Reset fichiers après compression
     files.value = []
     fileCount.value = 0
+  } catch (err) {
+    console.error(err)
+    toastRef.value?.showToast('❌ Erreur lors de la compression')
+  } finally {
+    isCompressing.value = false
+  }
+}
+
+/**
+ * Téléchargement du ZIP
+ */
+const downloadZip = () => {
+  if (!zipUrl.value) return
+  toastRef.value?.showToast('💾 ZIP téléchargé')
+  setTimeout(() => {
+    window.URL.revokeObjectURL(zipUrl.value)
     zipUrl.value = ''
-    document.getElementById('file-upload').value = ''
-    toastRef.value?.showToast('🔄 Liste réinitialisée')
-  }
-  
-  /**
-   * Compression via backend
-   */
-  const compressFiles = async () => {
-    if (files.value.length === 0) return
-  
-    isCompressing.value = true
-    progress.value = 0
-    if(!adminStore.isAuthenticated) {
-      toastRef.value?.showToast('❌ Vous devez être connecté pour compresser des fichiers')
-      return
-    }
-  
-    try {
-      const formData = new FormData()
-      files.value.forEach(f => formData.append('file', f.file))
-  
-      const response = await axios.post(`${baseURL}/uploads/image`, formData, {
-        withCredentials: true,
-        responseType: 'blob',
-        timeout: 30000,
-        onUploadProgress: (event) => {
-          progress.value = Math.round((event.loaded * 100) / event.total)
-        }
-      })
-  
-      const url = window.URL.createObjectURL(response.data)
-      zipUrl.value = url
-      toastRef.value?.showToast('✅ Compression terminée, ZIP prêt à télécharger !')
-  
-      files.value = []
-      fileCount.value = 0
-      isCompressing.value = false
-    } catch (err) {
-      console.error(err)
-      isCompressing.value = false
-      toastRef.value?.showToast('❌ Erreur lors de la compression')
-    }
-  }
-  
-  /**
-   * Téléchargement du ZIP
-   */
-  const downloadZip = () => {
-    if (!zipUrl.value) return
-    toastRef.value?.showToast('💾 ZIP téléchargé')
-    setTimeout(() => {
-      window.URL.revokeObjectURL(zipUrl.value)
-      zipUrl.value = ''
-    }, 200)
-  }
-  
-  /**
-   * Lightbox
-   */
-  const openLightbox = (src) => lightboxImage.value = src
-  const closeLightbox = () => lightboxImage.value = null
+  }, 200)
+}
+
+/**
+ * Lightbox
+ */
+const openLightbox = (src) => lightboxImage.value = src
+const closeLightbox = () => lightboxImage.value = null
+
   </script>
   
   <style scoped>

@@ -126,25 +126,41 @@
 import { Icon } from '@iconify/vue'
 import { useAdminStore } from '@/stores/adminStore'
 import { useRouter } from 'vue-router'
-import { ref } from 'vue'
-import { inject } from 'vue'
+import { ref, inject } from 'vue'
 
+// --- Store utilisateur ---
+// Permet d'accéder aux informations de l'utilisateur connecté et aux actions de connexion/déconnexion
 const adminStore = useAdminStore()
+
+// --- Router ---
+// Utilisé pour la navigation programmée après déconnexion
 const router = useRouter()
 
+// --- Références ---
+// Référence pour gérer l'affichage du toast global
 const toastRef = inject('toast')
+
+// Booléen réactif pour indiquer si l'utilisateur a cliqué sur "Déconnexion" (confirmation ou UI)
 const loggedOut = ref(false)
 
+/**
+ * Toggle de l'état de déconnexion (affichage du message de confirmation ou UI)
+ */
 const handleLoggedOut = () => {
   loggedOut.value = !loggedOut.value
 }
 
+/**
+ * Déconnexion de l'utilisateur
+ * 1. Appelle la méthode logout du store pour réinitialiser l'état utilisateur
+ * 2. Affiche un toast pour informer l'utilisateur
+ * 3. Redirige vers la page d'accueil
+ */
 const handleLogout = () => {
   adminStore.logout()
   toastRef.value?.showToast('🔒 Vous êtes maintenant déconnecté')
-    router.push('/')
+  router.push('/')
 }
-
 
 
 </script>

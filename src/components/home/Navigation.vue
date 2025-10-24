@@ -125,41 +125,56 @@
   </template>
   
   <script setup>
-  import { ref } from 'vue'
-  import { useAdminStore } from '@/stores/adminStore'
-  import { useRouter } from 'vue-router'
-  import { inject } from 'vue'
-  
-  // Store utilisateur
-  const admin = useAdminStore()
-  admin.fetchCurrentUser()
-  const router = useRouter()
+import { ref, inject } from 'vue'
+import { useAdminStore } from '@/stores/adminStore'
+import { useRouter } from 'vue-router'
 
-  // État du sous-menu
-  const open = ref(false)
-  const showLogoutConfirm = ref(false)
+/**
+ * Store utilisateur
+ * Permet de gérer l'état de l'utilisateur connecté et d'appeler les méthodes de login/logout
+ */
+const admin = useAdminStore()
+// Récupère les infos de l'utilisateur connecté dès le montage
+admin.fetchCurrentUser()
 
-  const openMenu = () => (open.value = true)
-  const closeMenu = () => (open.value = false)
-  const toggleMenu = () => (open.value = !open.value)
-  
-  // Scroll vers une section
-  const scrollToSection = (id) => {
-    const el = document.getElementById(id)
-    if (el) el.scrollIntoView({ behavior: 'smooth' })
-  }
+/** Router Vue pour naviguer entre les pages */
+const router = useRouter()
 
+/** État du sous-menu utilisateur */
+const open = ref(false)                  // Menu ouvert ou fermé
+const showLogoutConfirm = ref(false)     // Affichage de la confirmation de logout
+
+/** --- Fonctions de gestion du menu utilisateur --- */
+const openMenu = () => (open.value = true)
+const closeMenu = () => (open.value = false)
+const toggleMenu = () => (open.value = !open.value)
+
+/**
+ * Scroll vers une section spécifique de la page
+ * @param {string} id - ID de l'élément à atteindre
+ */
+const scrollToSection = (id) => {
+  const el = document.getElementById(id)
+  if (el) el.scrollIntoView({ behavior: 'smooth' })
+}
+
+/** Affiche ou masque la confirmation de logout */
 const toggleLogoutConfirm = () => {
   showLogoutConfirm.value = !showLogoutConfirm.value
 }
 
+/** Référence au système de notifications (toast) */
 const toastRef = inject('toast')
-const handleLogout = () => {
-  admin.logout()
-  toastRef.value?.showToast('🔒 Vous êtes maintenant déconnecté')
-  router.push('/')
-}
 
+/**
+ * Déconnexion de l'utilisateur
+ * Met à jour le store, affiche un toast et redirige vers la page d'accueil
+ */
+const handleLogout = () => {
+  admin.logout()                          // Appel de la méthode logout du store
+  toastRef.value?.showToast('🔒 Vous êtes maintenant déconnecté')
+  router.push('/')                        // Redirection vers la home
+}
 
   </script>
   

@@ -33,6 +33,10 @@
 </template>
 
 <script setup>
+/**
+ * Scroll vers la section "How it works"
+ * Recherchera l'élément avec l'ID 'howitwork' et effectuera un scroll fluide.
+ */
 const scrollToSection = () => {
   const el = document.getElementById('howitwork');
   if (el) {

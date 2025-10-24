@@ -8,6 +8,7 @@ import TestView from '../views/testView.vue'
 import Forbidden from '../views/Forbidden.vue'
 import AdminLayout from '@/layouts/AdminLayout.vue'
 import RegisterView from '@/views/RegisterView.vue'
+import ProfilView from '@/views/ProfilView.vue'
 
 const routes = [
   { path: '/login', name: 'login', component: LoginView, meta: { guest: true } },
@@ -25,6 +26,7 @@ const routes = [
     ]
   },
   { path: '/register', name: 'register', component: RegisterView, meta: { guest: true } },
+  { path: '/profil', name: 'profil', component: ProfilView, meta: { requiresAuth: true } },
 ]
 
 const router = createRouter({

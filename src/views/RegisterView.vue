@@ -170,24 +170,31 @@ import PageMeta from '@/components/shared/PageMeta.vue'
 import Navbar from '@/components/home/Navigation.vue'
 import { register } from '@/services/api.js'
 
+/** 
+ * Référence vers le composant toast pour afficher les notifications globales
+ * Injecté via provide/inject dans l'app
+ */
 const toastRef = inject('toast')
+
+/** Instance du router pour redirection après inscription */
 const router = useRouter()
 
-const email = ref('')
-const password = ref('')
-const confirmedPassword = ref('')
-const errorMessage = ref('')
-const loading = ref(false)
-const showPassword = ref(false)
-const showConfirmedPassword = ref(false)
+// --- Références réactives pour le formulaire ---
+const email = ref('')                  // Adresse e-mail saisie par l'utilisateur
+const password = ref('')               // Mot de passe
+const confirmedPassword = ref('')      // Confirmation du mot de passe
+const errorMessage = ref('')           // Message d'erreur affiché à l'utilisateur
+const loading = ref(false)             // Indique si une requête est en cours
+const showPassword = ref(false)        // Contrôle la visibilité du mot de passe
+const showConfirmedPassword = ref(false) // Contrôle la visibilité de la confirmation
 
-// --- Règles dynamiques ---
+// --- Règles dynamiques de validation de mot de passe ---
 const passwordLengthValid = computed(() => password.value.length >= 8)
 const passwordUppercaseValid = computed(() => /[A-Z]/.test(password.value))
 const passwordSpecialValid = computed(() => /[!@#$%^&*(),.?":{}|<>_\-+=]/.test(password.value))
 const passwordHasSpace = computed(() => password.value.includes(' '))
 
-// --- Calcul de la "force" ---
+// --- Calcul de la "force" du mot de passe ---
 const passwordScore = computed(() => {
   let score = 0
   if (passwordLengthValid.value) score++
@@ -197,33 +204,47 @@ const passwordScore = computed(() => {
   return score
 })
 
+/** Pourcentage de force du mot de passe (0-100) */
 const passwordStrength = computed(() => (passwordScore.value / 4) * 100)
 
+/** Label lisible représentant la force du mot de passe */
 const passwordStrengthLabel = computed(() => {
   if (passwordStrength.value < 50) return 'Faible'
   if (passwordStrength.value < 75) return 'Moyen'
   return 'Fort'
 })
 
+/** Classe CSS dynamique pour la couleur de la barre de progression */
 const passwordStrengthClass = computed(() => {
   if (passwordStrength.value < 50) return 'bg-red-500'
   if (passwordStrength.value < 75) return 'bg-yellow-400'
   return 'bg-green-500'
 })
 
+/** Classe CSS dynamique pour le label de la force */
 const passwordStrengthLabelClass = computed(() => {
   if (passwordStrength.value < 50) return 'text-red-600 font-medium'
   if (passwordStrength.value < 75) return 'text-yellow-600 font-medium'
   return 'text-green-600 font-semibold'
 })
 
+/** Retourne la classe CSS pour chaque règle selon si elle est validée */
 const ruleClass = (valid) => valid ? 'text-green-600' : 'text-gray-500'
 
-// --- Fonctions ---
+// --- Fonctions utilitaires ---
+/** Toggle la visibilité du mot de passe principal */
 const togglePassword = () => (showPassword.value = !showPassword.value)
+
+/** Toggle la visibilité du mot de passe de confirmation */
 const toggleConfirmedPassword = () => (showConfirmedPassword.value = !showConfirmedPassword.value)
+
+/** Valide le format de l'email */
 const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
 
+/**
+ * Valide l'ensemble du formulaire et retourne un message d'erreur si invalide.
+ * @returns {string|null} Message d'erreur ou null si valide
+ */
 const validateForm = () => {
   if (!validateEmail(email.value)) return 'Email invalide.'
   if (!passwordLengthValid.value) return 'Le mot de passe doit contenir au moins 8 caractères.'
@@ -234,13 +255,19 @@ const validateForm = () => {
   return null
 }
 
+/**
+ * Fonction principale pour gérer l'inscription d'un utilisateur
+ * Effectue la validation côté client puis appelle l'API
+ */
 const handleRegister = async () => {
-  if (loading.value) return
-  errorMessage.value = ''
-  const validationError = validateForm()
+  if (loading.value) return                // Empêche les soumissions multiples
+
+  errorMessage.value = ''                  // Réinitialise le message d'erreur
+  const validationError = validateForm()  // Validation du formulaire
 
   if (validationError) {
     errorMessage.value = validationError
+    // Focus sur le champ concerné selon l'erreur
     if (validationError.includes('Email')) document.getElementById('email')?.focus()
     else if (validationError.includes('correspondent')) document.getElementById('confirmedPassword')?.focus()
     else document.getElementById('password')?.focus()
@@ -249,14 +276,21 @@ const handleRegister = async () => {
 
   loading.value = true
   try {
+    // Inscription via l'API
     await register(email.value.trim().toLowerCase(), password.value)
+
+    // Redirection vers la page de login
     router.push('/login')
+
+    // Notification visuelle
     toastRef?.value?.showToast('✅ Inscription réussie')
   } catch (err) {
+    // Gestion des erreurs API
     errorMessage.value = err.message || 'Erreur lors de l’inscription.'
     toastRef?.value?.showToast('❌ ' + errorMessage.value)
   } finally {
     loading.value = false
   }
 }
+
 </script>

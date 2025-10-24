@@ -106,27 +106,47 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAdminStore } from '../stores/adminStore'
 import { login } from '../services/api.js'
-import PageMeta from '@/components/shared/PageMeta.vue';
-import Navbar from '@/components/home/Navigation.vue';
+import PageMeta from '@/components/shared/PageMeta.vue'
+import Navbar from '@/components/home/Navigation.vue'
 
-const email = ref('')
-const password = ref('')
-const errorMessage = ref('')
-const showPassword = ref(false)
+// --- Références réactives pour le formulaire ---
+const email = ref('')           // Email saisi par l'utilisateur
+const password = ref('')        // Mot de passe saisi
+const errorMessage = ref('')    // Message d'erreur à afficher
+const showPassword = ref(false) // Toggle de visibilité du mot de passe
 
-const admin = useAdminStore()
-const router = useRouter()
+// --- Store et router ---
+const admin = useAdminStore()   // Store Pinia pour gérer l'utilisateur connecté
+const router = useRouter()      // Router pour la navigation
 
+// --- Fonctions utilitaires ---
+
+/**
+ * Toggle la visibilité du mot de passe
+ */
 const togglePassword = () => {
   showPassword.value = !showPassword.value
 }
 
+/**
+ * Vérifie si l'email a un format valide
+ * @param {string} email - Email à vérifier
+ * @returns {boolean} True si l'email est valide
+ */
 const validateEmail = (email) => /\S+@\S+\.\S+/.test(email)
 
+/**
+ * Gestion de la soumission du formulaire de login
+ * - Validation côté client
+ * - Appel API login
+ * - Mise à jour du store avec les infos de l'utilisateur
+ * - Redirection selon le rôle
+ */
 const handleSubmit = async () => {
+  // Réinitialisation du message d'erreur
   errorMessage.value = ''
 
-  // Vérifications front
+  // --- Vérifications côté client ---
   if (!email.value || !password.value) {
     errorMessage.value = 'Tous les champs sont requis.'
     return
@@ -138,20 +158,21 @@ const handleSubmit = async () => {
   }
 
   try {
-    // Appel login
+    // --- Appel à l'API pour se connecter ---
+    // ✅ Le cookie HttpOnly sera géré côté serveur
     await login(email.value, password.value)
-    // ✅ Ici le cookie HttpOnly est déjà créé côté serveur
 
-    // Mettre à jour le store en appelant fetchCurrentUser
+    // --- Mise à jour du store avec l'utilisateur connecté ---
     await admin.fetchCurrentUser()
 
-    // Redirection après connexion
-    if(admin.role === 'admin') {
+    // --- Redirection selon le rôle ---
+    if (admin.role === 'admin') {
       router.push('/admin')
     } else {
       router.push('/')
     }
   } catch (err) {
+    // --- Gestion des erreurs API ---
     errorMessage.value = err.message || 'Erreur serveur'
   }
 }

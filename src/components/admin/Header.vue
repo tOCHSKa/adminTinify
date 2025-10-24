@@ -37,13 +37,7 @@
 <script setup>
 import { Icon } from '@iconify/vue'
 import { useAdminStore } from '@/stores/adminStore'
-import { useRouter } from 'vue-router'
 
 const adminStore = useAdminStore()
-const router = useRouter()
 
-const handleLogout = () => {
-  adminStore.logout()
-  router.push('/')
-}
 </script>

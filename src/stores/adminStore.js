@@ -10,6 +10,14 @@ export const useAdminStore = defineStore('admin', {
     isAuthenticated: false,
     loading: false,
     error: null,
+    firstName: null,
+    lastName: null,
+    createdAt: null,
+    entreprise: null,
+    phoneNumber: null,
+    address: null,
+    compressionCount: null,
+    plan: null,
   }),
 
   actions: {
@@ -35,6 +43,14 @@ export const useAdminStore = defineStore('admin', {
         const data = await res.json()
         this.user = data
         this.isAuthenticated = true
+        this.firstName = data.firstName
+        this.lastName = data.lastName
+        this.createdAt = data.createdAt
+        this.entreprise = data.entreprise
+        this.phoneNumber = data.phoneNumber
+        this.address = data.address
+        this.compressionCount = data.compressionCount
+        this.plan = data.plan
       } catch (err) {
         // Silencieux : on reset juste l'état
         this.user = null
@@ -66,5 +82,12 @@ export const useAdminStore = defineStore('admin', {
     role: (state) => state.user?.role,
     email: (state) => state.user?.email,
     shortEmail: (state) => state.user?.email?.split('@')[0] || 'Invité',
-  },
+    fullName: (state) => `${state.firstName} ${state.lastName}`,
+    createdAt: (state) => state.user?.createdAt.split('T')[0],
+    entreprise: (state) => state.user?.entreprise,
+    phoneNumber: (state) => state.user?.phoneNumber,
+    address: (state) => state.user?.address,
+    compressionCount: (state) => state.user?.compressionCount,
+    plan: (state) => state.user?.plan,
+    },
 })
