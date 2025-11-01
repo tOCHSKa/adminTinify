@@ -18,6 +18,7 @@ export const useAdminStore = defineStore('admin', {
     address: null,
     compressionCount: null,
     plan: null,
+    UUID: null,
   }),
 
   actions: {
@@ -51,6 +52,7 @@ export const useAdminStore = defineStore('admin', {
         this.address = data.address
         this.compressionCount = data.compressionCount
         this.plan = data.plan
+        this.UUID = data.UUID
       } catch (err) {
         // Silencieux : on reset juste l'état
         this.user = null
@@ -89,5 +91,7 @@ export const useAdminStore = defineStore('admin', {
     address: (state) => state.user?.address,
     compressionCount: (state) => state.user?.compressionCount,
     plan: (state) => state.user?.plan,
+    UUID: (state) => state.user?.UUID,
+    id: (state) => state.user?._id,
     },
 })

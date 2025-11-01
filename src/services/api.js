@@ -1,5 +1,6 @@
 // Base URL selon l'environnement
 const baseURL = process.env.VUE_APP_API_URL
+import { useAdminStore } from '@/stores/adminStore'
 
 // ---- LOGIN ----
 export const login = async (email, password) => {
@@ -61,5 +62,41 @@ export const logout = async () => {
   }
 };
 
+export const updateUserInfo = async (userInfo) => {
+  const adminStore = useAdminStore()
 
-export default { login, register, logout }
+  if (!adminStore.user?.UUID) {
+    throw new Error('Utilisateur non chargé ou identifiant manquant')
+  }
+
+  const [firstName, ...rest] = userInfo.fullName.split(' ')
+  const lastName = rest.join(' ')
+
+  const payload = {
+    firstName,
+    lastName,
+    email: userInfo.email,
+    phoneNumber: userInfo.phoneNumber,
+    entreprise: userInfo.entreprise,
+    address: userInfo.address,
+  }
+
+  const response = await fetch(`${baseURL}/users/${adminStore.user.UUID}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+    credentials: 'include',
+  })
+
+  const data = await response.json().catch(() => ({}))
+
+  if (!response.ok) {
+    throw new Error(data.error || 'Erreur lors de la mise à jour des informations utilisateur.')
+  }
+
+  return data
+}
+
+
+
+export default { login, register, logout, updateUserInfo }

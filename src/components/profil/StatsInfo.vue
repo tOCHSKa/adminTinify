@@ -2,18 +2,9 @@
     <div class="bg-white rounded-lg shadow-sm p-6">
         <h2 class="text-xl font-bold mb-6">Statistiques d'utilisation</h2>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div class="bg-blue-50 p-4 rounded-lg">
-                <div class="text-blue-800 font-bold text-2xl mb-2">{{ adminStore.compressionCount }}</div>
-                <div class="text-gray-600">Fichiers compressés</div>
-            </div>
-            <div class="bg-blue-50 p-4 rounded-lg">
-                <div class="text-blue-800 font-bold text-2xl mb-2">3.2 GB</div>
-                <div class="text-gray-600">Espace gagné</div>
-            </div>
-            <div class="bg-blue-50 p-4 rounded-lg">
-                <div class="text-blue-800 font-bold text-2xl mb-2">{{ adminStore.plan }}</div>
-                <div class="text-gray-600">Abonnement actuel</div>
-            </div>
+            <StatsComponentInfo :numberUnit="adminStore.compressionCount" unit="" title="Fichiers compressés" />
+            <StatsComponentInfo :numberUnit="adminStore.spaceSaved" unit="GB" title="Espace gagné" />
+            <StatsComponentInfo :numberUnit="adminStore.plan" unit="" title="Abonnement actuel" />
         </div>
 
         <h3 class="font-semibold mb-4">Activité récente</h3>
@@ -57,12 +48,13 @@
         </div>
 
         <div class="mt-8">
-            <a href="index.html" class="bg-blue-800 hover:bg-blue-900 text-white px-6 py-3 rounded-lg font-medium inline-block transition duration-200">Compresser un nouveau fichier</a>
+            <RouterLink to="/images" class="bg-blue-800 hover:bg-blue-900 text-white px-6 py-3 rounded-lg font-medium inline-block transition duration-200">Compresser un nouveau fichier</RouterLink>
         </div>
     </div>
 </template>
 
 <script setup>
+import StatsComponentInfo from './StatsComponentInfo.vue'
 import { onMounted } from 'vue'
 import feather from 'feather-icons'
 import { useAdminStore } from '@/stores/adminStore'
@@ -72,6 +64,8 @@ const adminStore = useAdminStore()
 onMounted(() => {
     feather.replace()
 })
+
+
 </script>
 
 <style scoped>
